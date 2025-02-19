@@ -23,11 +23,10 @@ from sklearn.metrics import (
 from sklearn.base import BaseEstimator, TransformerMixin
 import warnings
 warnings.filterwarnings('ignore')
-import fastparquet
 import pyarrow.parquet as pq
 
 # Read the Parquet file's schema
-schema = pq.read_schema("C:/Users/Veer/Downloads/MLE_CaseStudy/MLE_CaseStudy/case_study_subset.parquet")
+schema = pq.read_schema('case_study_dataset.parquet')
 print(schema)
 
 # Load data
@@ -36,7 +35,7 @@ import pyarrow as pa
 import pandas as pd
 
 # Read the Parquet file as a PyArrow Table
-table = pq.read_table("C:/Users/Veer/Downloads/MLE_CaseStudy/MLE_CaseStudy/case_study_subset.parquet")
+table = pq.read_table('case_study_dataset.parquet')
 
 # Check if the table has metadata and if it includes the 'pandas' key.
 if table.schema.metadata is not None and b'pandas' in table.schema.metadata:
@@ -44,7 +43,7 @@ if table.schema.metadata is not None and b'pandas' in table.schema.metadata:
     metadata = table.schema.metadata
     new_metadata = {k: v for k, v in metadata.items() if k != b'pandas'}
     new_schema = table.schema.with_metadata(new_metadata)
-    # Rebuild the table with the new schema (metadata is carried in the schema)
+    # Rebuild the table with the new schema
     table = pa.Table.from_arrays(table.columns, schema=new_schema)
 
 # Convert to a Pandas DataFrame
@@ -95,11 +94,12 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         X['length_of_stay'] = (X['checkOutDate'] - X['checkInDate']).dt.days
         
         # Discount percentage
+        X['valid_discount'] = X['minStrikePrice'] > X['minPrice']
         X['discount_pct'] = np.where(
-            X['minStrikePrice'] > 0,
-            (X['minStrikePrice'] - X['minPrice']) / X['minStrikePrice'] * 100,
+            X['valid_discount'],
+            (X['minStrikePrice'] - X['minPrice'])/X['minStrikePrice']*100,
             0
-        )
+)
         
         # Drop unnecessary columns
         drop_cols = [
