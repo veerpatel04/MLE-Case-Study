@@ -57,11 +57,30 @@ Expand the system to handle multiple markets with region-specific features and m
 
 ## Setup Instructions
 
-### Requirements
-- Python 3.8+ environment
-- Dependencies:
-  ```bash
-  pandas==1.4.2
-  scikit-learn==1.1.2
-  matplotlib==3.5.3
-  pyarrow==8.0.0
+1. Clone or download this repository from GitHub and navigate to the downloaded directory.
+
+2. Create and activate a Python virtual environment. You can do this using tools like Conda or venv.
+
+Code to run:
+
+# Using Conda
+conda create -n booking_prediction python=3.9
+conda activate booking_prediction
+
+# Using python -m venv
+python -m venv booking_prediction
+# Linux/Mac
+source booking_prediction/bin/activate
+# Windows
+booking_prediction\Scripts\activate
+
+3. Install the necessary dependencies by running the command to install from the requirements.txt file. Ensure you have pandas, numpy, matplotlib, seaborn, scikit-learn, pyarrow, and fastparquet installed.
+
+Code to run: pip install -r requirements.txt
+
+4. Confirm that the dataset file (case_study_subset.parquet) is located in the same directory as the script (MLE_CaseStudy_2.py).
+
+5. Run the script (MLE_CaseStudy_2.py). This will: • Load the data from case_study_subset.parquet. • Perform exploratory data analysis. • Train and evaluate the models. • Print cross-validation and test AUC metrics. • Generate and save any figures (ROC curves, feature importance charts) in the repository.
+
+Code to run: python MLE_CaseStudy_2.py
+
