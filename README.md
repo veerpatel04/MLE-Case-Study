@@ -8,45 +8,50 @@
 This project develops a machine learning solution to predict hotel booking probabilities using customer search data. The implementation focuses on creating a scalable pipeline that processes raw data, engineers meaningful features, and evaluates multiple models to optimize hotel ranking decisions.
 
 ### Exploratory Data Analysis (EDA)
-The dataset contains 23 features spanning customer demographics, search parameters, and hotel attributes. Initial analysis revealed a significant class imbalance in the target variable (`bookingLabel`), with non-bookings (label 0) dominating over actual bookings (label 1). As shown in the target distribution plot (Figure 1), approximately 95% of instances represent non-conversions. Numerical features like `numRooms` and `minPrice` showed right-skewed distributions, while `customerReviewScore` displayed a normal distribution pattern (Figure 2).
+The dataset contains 23 features spanning customer demographics, search parameters, and hotel attributes. Initial analysis revealed a significant class imbalance in the target variable (`bookingLabel`), with non-bookings (label 0) dominating over actual bookings (label 1). As shown in the target distribution plot, approximately 95% of instances represent non-conversions. Numerical features like `numRooms` and `minPrice` showed right-skewed distributions, while `customerReviewScore` displayed a normal distribution pattern.
 
 ### Feature Engineering
 Key engineered features include temporal metrics such as `days_to_checkin` (calculated from search to check-in dates) and `length_of_stay` (duration between check-in/out dates). A `discount_pct` feature was created to quantify price incentives using the difference between strike and actual prices. Non-predictive identifiers like `searchId` and temporal columns were removed to prevent data leakage.
 
-### Model Development
-Three models were implemented in a scikit-learn pipeline:
-1. **Logistic Regression** with class weighting
-2. **Random Forest** classifier
-3. **Gradient Boosting** machine (GBM)
+### Model Development and Results
+We evaluated three machine learning models for predicting booking probability:
 
-The preprocessing pipeline handles missing values through median/mode imputation, scales numerical features, and one-hot encodes categorical variables like `destinationName` and `deviceCode`. Stratified 3-fold cross-validation was used to account for class imbalance.
+Logistic Regression achieved an AUC of 0.58
+Random Forest achieved an AUC of 0.60
+Gradient Boosting achieved an AUC of 0.65
 
-### Results
-The Random Forest model achieved superior performance with a test AUC of 0.86, demonstrating strong discrimination capability between booking/non-booking events. As shown in the ROC curve comparison (Figure 3), all models significantly outperformed random guessing, with GBM closely following at 0.85 AUC. Feature importance analysis (Figure 4) identified `discount_pct`, `days_to_checkin`, and `customerReviewScore` as top predictors, suggesting price sensitivity and planning horizon significantly influence booking decisions.
+Gradient Boosting demonstrated the strongest performance, though there remains room for improvement. The analysis identified key predictive features, with review count, customer review scores, and star level showing the strongest influence on booking probability. Feature importance analysis identified `discount_pct`, `days_to_checkin`, and `customerReviewScore` as top predictors, suggesting price sensitivity and planning horizon significantly influence booking decisions.
 
 ---
 
 ## Recommendations for Improvement
+### Data and Features
 
-### 1. Class Imbalance Mitigation
-The severe 95:5 class ratio likely limits model sensitivity to booking patterns. Implementing synthetic minority oversampling (SMOTE) or using precision-oriented metrics like F2-score could improve recall of booking events without excessive false positives.
+Track major holidays, local events, and peak travel seasons to capture temporal patterns that influence booking behavior.
+Incorporate historical booking rates and patterns to provide context for predicting future bookings.
+Add competitor price tracking to understand each hotel's relative value proposition within its market segment.
+Integrate local event data and geographic features to provide better context for booking predictions.
 
-### 2. Model Optimization
-Conduct grid searches to optimize hyperparameters like Random Forest's tree depth and GBM's learning rate. Experiment with alternative classifiers like XGBoost or neural networks that might better capture complex feature interactions.
+### Model Enhancements
 
-### 3. Enhanced Feature Space
-Incorporate external datasets such as:
-- Local event calendars to capture demand surges
-- Weather forecasts for destination locations
-- Historical hotel performance metrics
+Implement SMOTE or adjusted class weights to address the significant imbalance between booked and non-booked hotels.
+Upgrade to more sophisticated algorithms like XGBoost or LightGBM to better capture complex booking patterns.
+Combine predictions from multiple models through stacking or ensemble methods to improve overall accuracy.
+Set up automated hyperparameter optimization to maintain peak model performance as data patterns change.
 
-Create interaction terms between key features like `discount_pct × starLevel` to model premium property price sensitivity.
+### System Improvements
 
-### 4. Deployment Strategy
-Package the model using Docker for containerized deployment on cloud platforms. Implement a FastAPI service with endpoint monitoring to handle real-time prediction requests from the hotel ranking system.
+Optimize the feature engineering pipeline to enable real-time predictions for incoming search requests.
+Implement continuous model monitoring to track performance metrics and trigger retraining when needed.
+Create an A/B testing framework to safely evaluate new features and model improvements.
+Develop API endpoints for both real-time predictions and batch processing capabilities.
 
-### 5. Performance Monitoring
-Establish baselines for feature distributions using tools like Great Expectations. Monitor prediction drift and implement automated retraining triggers when AUC drops below 0.82.
+### Future Work
+
+Build a price sensitivity model to optimize pricing strategies in conjunction with booking predictions.
+Create a personalization system that incorporates individual user preferences and booking history.
+Implement an automated feedback loop to incorporate booking outcomes into regular model updates.
+Expand the system to handle multiple markets with region-specific features and models.
 
 ---
 
